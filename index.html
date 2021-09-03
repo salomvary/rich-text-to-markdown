@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Rich text to Markdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    main {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+
+    [contenteditable] {
+      overflow: auto;
+    }
+
+    section {
+      flex: 1 1 auto;
+    }
+
+    section > * {
+      width: 100%;
+      min-width: 250px;
+      min-height: 250px;
+      border: 3px dashed hotPink;
+      padding: 5px;
+      margin: 10px 0;
+    }
+
+    @media screen and (min-width: 640px) {
+      main {
+        height: 100vh;
+      }
+
+      section {
+        display: flex;
+      }
+
+      section > * {
+        flex: 1 1 auto;
+        width: 50%;
+      }
+
+      section > :first-child {
+        margin-right: 20px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <script>
+    module = {exports: {}}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-md@0.5.0/dist/index.min.js"></script>
+  <script>
+    html2md = module.exports
+  </script>
+  <!--
+  <script>
+    function update(richText) {
+      document.getElementById('markdown').value = html2md(richText.innerHTML)
+    }
+  </script>
+  -->
+  <script src="https://unpkg.com/turndown@7.1.1/dist/turndown.js"></script>
+  <script>
+    const turndownService = new TurndownService();
+    const engines = {
+      html2md: html2md,
+      turndown: turndownService.turndown.bind(turndownService)
+    };
+
+    function update() {
+      const engineName = document.forms[0].engine.value;
+      const engine = engines[engineName];
+      const markdownField = document.getElementById('markdown');
+      const richTextField = document.getElementById('richtext');
+      try {
+        markdownField.value = engine(richTextField.innerHTML);
+      } catch (e) {
+        alert('Conversion failed:\n' + e.message);
+      }
+    }
+  </script>
+  <main>
+    <h1>Convert Google Doc or other rich text to Markdown</h1>
+    <section>
+      <div contenteditable oninput="update()" id="richtext">
+        <b style="font-size:25px; color: red">
+          Paste rich text content here
+        </b>
+      </div>
+      <textarea id="markdown">Markdown will appear here</textarea>
+    </section>
+    <footer>
+      <form>
+        <p>
+          Engine:
+          <label><input onchange="update()" name="engine" type="radio" value="html2md"/>html2md</label>
+          <label><input onchange="update()" name="engine" type="radio" value="turndown" checked/>Turndown</label>
+        </p>
+      </form>
+    </footer>
+  </main>
+</body>
+
+</html>
